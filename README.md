@@ -6,39 +6,58 @@
 * comment on a post
 * like a post
 * subscribe on a user
-* notify about a new post in subscriptions
 * search posts by zones on map
 * view user posts
 
 ## Non-functional requirements 
 
-#### Given by business
+### Given by business
 * DAU = 10m
 * geo distribution is not needed(only CIS)
-* no seasonality
+* seasonality: increased load in summer and around 31st december
 
-#### According to Instagram(average amount per day):
-**Reactions** = 50 \
-**RPS** = 10_000_000 * 50 / 86_400 = 5700
+### Activities
 
-**Comments** = 5 \
-Max text size = 1024 \
-**RPS** = 10_000_000 * 5 / 86_400 = 570 \
-**Traffic** = 1KB * 570rps = 570KB/s
+**1. Comments** \
+Write: 5 comments per day \
+Read: 50 comments per day \
+Data:
+- text = 1024B
+- post_id = 4B
+- creator_id = 4B
 
-**Posts** = 1 \
-Photos per post = 3 \
-Max text size = 2048 \
-Max photo size = 1MB \
-**RPS** = 10_000_000 * 1 / 86_400 = 115 \
-**Traffic** = (2KB + 1024KB * 3) * 115 = 350MB/s 
+**RPS(write)** = 10_000_000 * 5 / 86_400 = 570r/s \
+**Traffic(write)** = 1032B * 570rps = 0.5MB/s \
+**RPS(read)** = 10_000_000 * 50 / 86_400 = 5700r/s \
+**Traffic(read)** = 1032B * 5700rps = 5.6MB/s
 
-**RPS on write** = 5700 + 570 + 115 = 6385 \
-**Traffic on write** = 351MB/s
+**2. Posts** \
+Write: 1 post per day \
+Read: 100 posts per day \
+Data:
+- photo(x3) = 3MB
+- text = 2048B
+- creator_id = 4B
 
-**Requests to read posts**(10 post by request) = 10 \
-**RPS on read** = 10_000_000 * 10 / 86_400 = 1150 \
-Average post = (1024KB * 3 + 2KB) = 3074KB
-Average request = 3074KB * 10 = 30740KB
-**Traffic on read** = 1150 * 30740KB = 35TB/s
+**RPS(write)** = 10_000_000 * 1 / 86_400 = 115r/s \
+**Traffic(write)** = (2KB * 3072KB) * 115 = 345MB/s \
+**RPS(read)** = 10_000_000 * 100 / 86_400 = 11500r/s \
+**Traffic(read)** = (2KB * 3072KB) * 11500rps = 33.7GB/s
 
+**3. Reactions** \
+Write: 50 reactions per day \
+Read: 11500 (same as posts, get as counted via cache with posts) \
+Data:
+- post_id = 4B
+- type(like/dislike) = 4B
+- actor_id = 4B
+
+**RPS(write)** = 10_000_000 * 50 / 86_400 = 5700r/s \
+**Traffic(write)** = 12B * 5700rps = 67KB/s
+
+## Total
+
+**RPS(write)** = 570 + 115 + 5700 = 6300r/s \
+**Traffic(write)** = 0.5MB/s + 345MB/s + 67KB/s = 350MB/s \
+**RPS(read)** = 5700 + 11500 =17200r/s \
+**Traffic(read)** = 5.6MB/s + 33.7GB/s = 34GB/s
