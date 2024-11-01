@@ -11,10 +11,14 @@
 
 ## Non-functional requirements 
 
-### Given by business
+* data tll = infinity
+* availability rate > 99.95%
 * DAU = 10m
+* average response time <= 300ms 
 * geo distribution is not needed(only CIS)
-* seasonality: increased load in summer and around 31st december
+* seasonality: **increased load by 70%** \
+(1st June - 31st August, 25th December - 10th January)
+* limits: 200 posts a day, 1k comments a day, 1k likes a day, 5m followers
 
 ### Activities
 
@@ -54,10 +58,3 @@ Data:
 
 **RPS(write)** = 10_000_000 * 50 / 86_400 = 5700r/s \
 **Traffic(write)** = 12B * 5700rps = 67KB/s
-
-## Total
-
-**RPS(write)** = 570 + 115 + 5700 = 6300r/s \
-**Traffic(write)** = 0.5MB/s + 345MB/s + 67KB/s = 350MB/s \
-**RPS(read)** = 5700 + 11500 =17200r/s \
-**Traffic(read)** = 5.6MB/s + 33.7GB/s = 34GB/s
